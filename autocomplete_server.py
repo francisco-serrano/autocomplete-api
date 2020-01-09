@@ -14,6 +14,7 @@ def autocomplete():
     completions = my_autocompleter.generate_completions(q)
     return jsonify({"Completions": completions})
 
+
 if __name__ == "__main__":
     my_autocompleter = autocompleter.Autocompleter.load()
 
