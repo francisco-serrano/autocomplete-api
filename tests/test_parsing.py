@@ -2,9 +2,11 @@
     We are evaluating how you write unit tests, so please demonstrate your ability at writing
     good tests.  Feel free to add more tests to validate your solution. """
 
+import os
+
 from core.autocompleter import load_base_json, generate_elastic_search_input
 
-JSON_DIR = '../sample_conversations.json'
+JSON_DIR = os.getenv('BASE_JSON_DIR', '../sample_conversations.json')
 
 
 def test_json_structure():
