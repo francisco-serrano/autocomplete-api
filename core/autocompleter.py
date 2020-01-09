@@ -1,21 +1,22 @@
 import json
 import string
-import os
 
 from functools import reduce
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch_dsl import Search, Q
-from utils.logger import logger
 
-DEFAULT_FILENAME = os.getenv('BASE_JSON_DIR', '../sample_conversations.json')
+from utils.logger import logger
+from utils.environment import environment
+
 
 INDEX_NAME = 'challenge'
 INDEX_SETTINGS = {
     'mappings': {'properties': {'message': {'type': 'search_as_you_type'}}}
 }
 
-ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'localhost')
-ELASTICSEARCH_PORT = int(os.getenv('ELASTICSEARCH_PORT', '9200'))
+INPUT_JSON = environment['input_json']
+ELASTICSEARCH_HOST = environment['es_host']
+ELASTICSEARCH_PORT = environment['es_port']
 
 
 def generate_elastic_search_input(json_input):
@@ -59,13 +60,16 @@ def parse_messages(issues):
 
 class Autocompleter:
     def __init__(self):
-        self.es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}], timeout=20, max_retries=3)
+        self.es = Elasticsearch(
+            [{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}],
+            timeout=20, max_retries=3
+        )
         self.search = Search(using=self.es, index=INDEX_NAME)
 
     def health_check(self):
         return self.es.cluster.health()
 
-    def import_json(self, json_filename=DEFAULT_FILENAME):
+    def import_json(self, json_filename=INPUT_JSON):
         self.es.indices.delete(index=INDEX_NAME, ignore_unavailable=True)
         self.es.indices.create(index=INDEX_NAME, body=INDEX_SETTINGS)
         helpers.bulk(self.es, generate_elastic_search_input(json_filename))

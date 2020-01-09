@@ -1,4 +1,6 @@
-## Autocomplete Service
+# Autocomplete Service
+
+Small application which leverages ElasticSearch capabilities in order to offer a very quick autocomplete feature
 
 ### Steps
 At the moment we only have dev environment for local development
