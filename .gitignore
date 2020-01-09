@@ -133,3 +133,6 @@ dmypy.json
 !/data01/
 !/data03/
 !/data02/
+
+*.txt
+*.json
