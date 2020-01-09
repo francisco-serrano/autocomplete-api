@@ -1,17 +1,21 @@
 import json
 import string
+import os
 
 from functools import reduce
 from elasticsearch import Elasticsearch, helpers
 from elasticsearch_dsl import Search, Q
 from utils.logger import logger
 
-DEFAULT_FILENAME = '../sample_conversations.json'
+DEFAULT_FILENAME = os.getenv('BASE_JSON_DIR', './sample_conversations.json')
 
 INDEX_NAME = 'challenge'
 INDEX_SETTINGS = {
     'mappings': {'properties': {'message': {'type': 'search_as_you_type'}}}
 }
+
+ELASTICSEARCH_HOST = os.getenv('ELASTICSEARCH_HOST', 'localhost')
+ELASTICSEARCH_PORT = int(os.getenv('ELASTICSEARCH_PORT', '9200'))
 
 
 def generate_elastic_search_input(json_input):
@@ -44,7 +48,7 @@ def generate_elastic_search_input(json_input):
 
 class Autocompleter:
     def __init__(self):
-        self.es = Elasticsearch()
+        self.es = Elasticsearch([{'host': ELASTICSEARCH_HOST, 'port': ELASTICSEARCH_PORT}])
         self.search = Search(using=self.es, index=INDEX_NAME)
 
     def import_json(self, json_filename=DEFAULT_FILENAME):
