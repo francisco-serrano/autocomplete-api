@@ -1,0 +1,1 @@
+docker-compose up es01 es02 es03

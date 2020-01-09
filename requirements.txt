@@ -3,3 +3,4 @@ flask==1.1.1
 werkzeug==0.15.4
 elasticsearch==7.1.0
 elasticsearch-dsl==7.1.0
+Flask-Testing==0.7.1

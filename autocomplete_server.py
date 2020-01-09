@@ -2,13 +2,13 @@
 in this file. """
 
 from flask import Flask, request, jsonify
-from services import autocompleter
+from core import autocompleter
 from utils.logger import logger
 
 import time
 
 app = Flask(__name__)
-my_autocompleter = autocompleter.Autocompleter()
+autocompleter = autocompleter.Autocompleter()
 
 
 @app.route('/autocomplete')
@@ -16,9 +16,19 @@ def autocomplete():
     """ Generate autocompletions given the query 'q' """
     start = time.time()
     q = request.args.get('q')
-    completions = my_autocompleter.generate_completions(q)
+    completions = autocompleter.generate_completions(q)
     logger.info('elapsed time: {}'.format(time.time() - start))
     return jsonify({"Completions": completions})
+
+
+@app.route('/health')
+def health():
+    return jsonify({'response': autocompleter.health_check()})
+
+
+@app.route('/hello')
+def hello():
+    return jsonify(message='hello world')
 
 
 if __name__ == "__main__":
