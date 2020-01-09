@@ -16,6 +16,6 @@ def autocomplete():
 
 
 if __name__ == "__main__":
-    my_autocompleter = autocompleter.Autocompleter.load()
+    my_autocompleter = autocompleter.Autocompleter()
 
     app.run()

@@ -1,30 +1,70 @@
-from elasticsearch import Elasticsearch, helpers
-import pickle
-from parse_json import generate_elastic_search_input
+import json
+import string
 
-DEFAULT_FILENAME = "autocompleter.pkl"
+from functools import reduce
+from elasticsearch import Elasticsearch, helpers
+from elasticsearch_dsl import Search, Q
+from utils.logger import logger
+
+DEFAULT_FILENAME = 'sample_conversations.json'
+
+INDEX_NAME = 'challenge'
+INDEX_SETTINGS = {
+    'mappings': {'properties': {'message': {'type': 'search_as_you_type'}}}
+}
+
+
+def generate_elastic_search_input(json_input):
+    input_file = open(json_input, encoding='utf-8')
+    data = json.load(input_file)
+
+    logger.info('{} opened successfully'.format(json_input))
+
+    issues = data['Issues']
+
+    messages = list(map(lambda x: x['Messages'], issues))
+    messages = reduce(list.__add__, messages)
+    messages = list(map(lambda x: x['Text'], messages))
+    messages = list(map(lambda x: x.translate(str.maketrans('', '', string.punctuation)), messages))
+    messages = set(messages)
+
+    indexes = list(range(0, len(messages)))
+
+    logger.info('{} successfully parsed, amount of messages: {}'.format(json_input, len(messages)))
+
+    for idx, msg in zip(indexes, messages):
+        yield {
+            '_index': 'challenge',
+            '_id': idx,
+            '_source': {
+                'message': msg
+            }
+        }
 
 
 class Autocompleter:
     def __init__(self):
         self.es = Elasticsearch()
-        self.es.indices.delete(index='challenge')
-        self.es.indices.create(index='challenge', body={
-            'mappings': {'properties': {'message': {'type': 'search_as_you_type'}}}
-        })
+        self.search = Search(using=self.es, index=INDEX_NAME)
 
-    def import_json(self, json_filename):
+    def import_json(self, json_filename=DEFAULT_FILENAME):
+        self.es.indices.delete(index=INDEX_NAME, ignore_unavailable=True)
+        self.es.indices.create(index=INDEX_NAME, body=INDEX_SETTINGS)
         helpers.bulk(self.es, generate_elastic_search_input(json_filename))
+        logger.info('Bulk Insert from JSON successful')
 
     def generate_completions(self, prefix_string):
-        return []
+        logger.info('searching completions for {}'.format(prefix_string))
 
-    def save(self, filename=DEFAULT_FILENAME):
-        pass
-        # with open(filename, "wb") as f:
-        #     pickle.dump(self, f)
+        q = Q('multi_match',
+              query=prefix_string,
+              fields=['message', 'message._2gram', 'message._3gram'],
+              type='bool_prefix'
+              )
 
-    @classmethod
-    def load(cls, filename=DEFAULT_FILENAME):
-        with open(filename, "rb") as f:
-            return pickle.load(f)
+        response = self.search.query(q).execute()
+        response = list(map(lambda x: x['message'], response))
+
+        logger.info('{} completions found'.format(len(response)))
+
+        return response

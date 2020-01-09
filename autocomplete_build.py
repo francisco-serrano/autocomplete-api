@@ -4,8 +4,7 @@ import sys
 
 def build():
     my_autocompleter = autocompleter.Autocompleter()
-    my_autocompleter.import_json('./sample_conversations.json')
-    my_autocompleter.save()
+    my_autocompleter.import_json()
 
 
 if __name__ == "__main__":
