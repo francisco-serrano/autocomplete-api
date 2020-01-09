@@ -37,6 +37,7 @@ def load_base_json(json_file):
 def parse_messages(issues):
     messages = list(map(lambda x: x['Messages'], issues))
     messages = reduce(list.__add__, messages)
+    messages = list(filter(lambda x: not x['IsFromCustomer'], messages))
     messages = list(map(lambda x: x['Text'], messages))
     messages = list(map(lambda x: x.translate(str.maketrans('', '', string.punctuation)), messages))
     messages = list(filter(lambda x: len(x) != 0, messages))
