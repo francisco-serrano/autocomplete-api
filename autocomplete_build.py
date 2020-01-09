@@ -1,9 +1,9 @@
-from core import autocompleter
+from core.autocompleter import Autocompleter
 import sys
 
 
 def build():
-    my_autocompleter = autocompleter.Autocompleter()
+    my_autocompleter = Autocompleter()
     my_autocompleter.import_json()
 
 

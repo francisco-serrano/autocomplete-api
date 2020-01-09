@@ -2,8 +2,9 @@
     We are evaluating how you write unit tests, so please demonstrate your ability at writing
     good tests.  Feel free to add more tests to validate your solution. """
 
-from core.autocompleter import load_base_json, generate_elastic_search_input
-from utils.environment import environment
+from core.autocompleter import generate_elastic_search_input
+from environment import environment
+from utils.json_parser import load_base_json
 
 JSON_DIR = environment['input_json']
 
