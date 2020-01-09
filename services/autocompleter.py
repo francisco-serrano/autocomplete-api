@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch, helpers
 from elasticsearch_dsl import Search, Q
 from utils.logger import logger
 
-DEFAULT_FILENAME = 'sample_conversations.json'
+DEFAULT_FILENAME = '../sample_conversations.json'
 
 INDEX_NAME = 'challenge'
 INDEX_SETTINGS = {

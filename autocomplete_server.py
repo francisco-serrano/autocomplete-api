@@ -2,7 +2,7 @@
 in this file. """
 
 from flask import Flask, request, jsonify
-import autocompleter
+from services import autocompleter
 
 app = Flask(__name__)
 

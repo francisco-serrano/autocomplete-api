@@ -1,3 +1,5 @@
-pytest
-flask
-elasticsearch
+pytest==4.0.2
+flask==1.1.1
+werkzeug==0.15.4
+elasticsearch==7.1.0
+elasticsearch-dsl==7.1.0

@@ -1,4 +1,4 @@
-import autocompleter
+from services import autocompleter
 import sys
 
 
