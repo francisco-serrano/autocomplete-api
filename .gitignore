@@ -137,3 +137,4 @@ dmypy.json
 *.txt
 *.json
 !/elasticsearch/
+/notes.md
